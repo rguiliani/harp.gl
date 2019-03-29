@@ -31,6 +31,60 @@ export type Technique =
     | NoneTechnique;
 
 /**
+ * The kind of geometry is used to
+ *
+ * a) Group objects together, allowing the group to be hidden or displayed.
+ *
+ * b) Assigning the objects a loading phase. If a [[PhasedTileGeometryManager]] is used, techniques
+ *      without a `GeometryKind` may not be processed (at the desired phase).
+ */
+export enum GeometryKind {
+    /**
+     * Unassigned.
+     */
+    None = "none",
+
+    /**
+     * Unassigned.
+     */
+    Background = "background",
+
+    /**
+     * Unassigned.
+     */
+    Ground = "ground",
+
+    /**
+     * Default value for the FillTechnique.
+     */
+    Area = "area",
+    /**
+     * Default value for all line techniques.
+     */
+    Line = "line",
+
+    /**
+     * Unassigned.
+     */
+    Road = "road",
+
+    /**
+     * Default value for the ExtrudedPolygonTechnique.
+     */
+    Building = "building",
+
+    /**
+     * Default value for the TextTechnique, LineMarkerTechnique and the PoiTechnique.
+     */
+    Label = "label",
+
+    /**
+     * Unassigned.
+     */
+    Detail = "detail"
+}
+
+/**
  * Techniques are used to specify how a geometry is drawn on the canvas.
  */
 export interface BaseTechnique {
@@ -89,6 +143,17 @@ export interface BaseTechnique {
      * opacity and stops fading out. A value of <= 0.0 disables fading.
      */
     fadeFar?: number;
+
+    /**
+     * Specified kind of geometry. One kind is set as default in the technique, and can be
+     * overridden in the style.
+     */
+    geometryKind?: GeometryKind;
+
+    /**
+     * List of tags.
+     */
+    tags?: string[];
 }
 
 /**
