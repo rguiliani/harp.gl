@@ -89,6 +89,11 @@ const DEFAULT_MAX_ZOOM_LEVEL = 20;
 const DEFAULT_MIN_CAMERA_HEIGHT = 20;
 
 /**
+ * Name used internally to identify the [[StyleSet]] and name the [[DataSource]] for user features.
+ */
+const USER_FEATURES_GENERIC_IDENTIFIER = "user"; // Do not use dashes.
+
+/**
  * The type of `RenderEvent`.
  */
 export interface RenderEvent extends THREE.Event {
