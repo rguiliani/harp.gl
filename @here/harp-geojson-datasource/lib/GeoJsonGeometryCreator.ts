@@ -342,11 +342,11 @@ export class GeoJsonGeometryCreator {
             if (polygon.holes.length) {
                 for (let i = 0; i < polygon.holes.length; i++) {
                     if (i === polygon.holes.length - 1) {
-                        holesVertices[i] = polygon.vertices.slice(polygon.holes[i] * 2);
+                        holesVertices[i] = polygon.vertices.slice(polygon.holes[i] * 3);
                     } else {
                         holesVertices[i] = polygon.vertices.slice(
-                            polygon.holes[i] * 2,
-                            polygon.holes[i + 1] * 2
+                            polygon.holes[i] * 3,
+                            polygon.holes[i + 1] * 3
                         );
                     }
                 }
@@ -358,11 +358,15 @@ export class GeoJsonGeometryCreator {
             featureIds.push(0);
             geojsonProperties.push(polygon.geojsonProperties);
 
-            for (let i = 0; i < polygon.vertices.length; i += 2) {
-                positions.push(polygon.vertices[i], polygon.vertices[i + 1], 0);
+            for (let i = 0; i < polygon.vertices.length; i += 3) {
+                positions.push(
+                    polygon.vertices[i],
+                    polygon.vertices[i + 1],
+                    polygon.vertices[i + 2]
+                );
             }
 
-            const triangles = earcut(polygon.vertices, polygon.holes);
+            const triangles = earcut(polygon.vertices, polygon.holes, 3);
 
             for (let i = 0; i < triangles.length; i += 3) {
                 const v1 = triangles[i];
@@ -424,7 +428,7 @@ export class GeoJsonGeometryCreator {
 
         for (const polygon of geometryData.polygons) {
             contour = polygon.holes.length
-                ? polygon.vertices.slice(0, polygon.holes[0] * 2)
+                ? polygon.vertices.slice(0, polygon.holes[0] * 3)
                 : polygon.vertices;
 
             // External ring.
@@ -434,11 +438,11 @@ export class GeoJsonGeometryCreator {
             if (polygon.holes.length) {
                 for (let i = 0; i < polygon.holes.length; i++) {
                     if (i === polygon.holes.length - 1) {
-                        holesVertices[i] = polygon.vertices.slice(polygon.holes[i] * 2);
+                        holesVertices[i] = polygon.vertices.slice(polygon.holes[i] * 3);
                     } else {
                         holesVertices[i] = polygon.vertices.slice(
-                            polygon.holes[i] * 2,
-                            polygon.holes[i + 1] * 2
+                            polygon.holes[i] * 3,
+                            polygon.holes[i + 1] * 3
                         );
                     }
 
@@ -537,13 +541,13 @@ export class GeoJsonGeometryCreator {
         buffer: number[]
     ): void {
         let outline = [];
-        for (let i = 0; i < contour.length; i += 2) {
-            outline.push(contour[i], contour[i + 1]);
+        for (let i = 0; i < contour.length; i += 3) {
+            outline.push(contour[i], contour[i + 1], contour[i + 2]);
             if (
                 (this.isOnTileBorder(contour[i], tileExtents) &&
-                    this.isOnTileBorder(contour[i + 2], tileExtents)) ||
+                    this.isOnTileBorder(contour[i + 3], tileExtents)) ||
                 (this.isOnTileBorder(contour[i + 1], tileExtents) &&
-                    this.isOnTileBorder(contour[i + 3], tileExtents))
+                    this.isOnTileBorder(contour[i + 4], tileExtents))
             ) {
                 lines.add([...outline]);
                 buffer.push(...outline);

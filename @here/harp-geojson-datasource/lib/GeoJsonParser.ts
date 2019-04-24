@@ -446,7 +446,11 @@ export class GeoJsonParser {
                 projection
                     .projectPoint(this.m_cached_geoCoord, this.m_cached_worldCoord)
                     .sub(center);
-                vertices.push(this.m_cached_worldCoord.x, this.m_cached_worldCoord.y);
+                vertices.push(
+                    this.m_cached_worldCoord.x,
+                    this.m_cached_worldCoord.y,
+                    this.m_cached_worldCoord.z
+                );
             }
 
             buffer.lines.vertices.push(vertices);
@@ -500,7 +504,11 @@ export class GeoJsonParser {
                 projection
                     .projectPoint(this.m_cached_geoCoord, this.m_cached_worldCoord)
                     .sub(center);
-                vertices.push(this.m_cached_worldCoord.x, this.m_cached_worldCoord.y);
+                vertices.push(
+                    this.m_cached_worldCoord.x,
+                    this.m_cached_worldCoord.y,
+                    this.m_cached_worldCoord.z
+                );
             }
 
             buffer.lines.vertices.push(vertices);
@@ -551,7 +559,7 @@ export class GeoJsonParser {
                 // the first polygon in the coordinates array is the main polygon the other ones
                 // are holes.
                 if (vertices.length) {
-                    holes.push(vertices.length / 2);
+                    holes.push(vertices.length / 3);
                 }
 
                 for (const point of polygon) {
@@ -567,7 +575,11 @@ export class GeoJsonParser {
                         this.m_cached_worldCoord.x = this.m_cached_worldCoord.x * -1;
                     }
 
-                    vertices.push(this.m_cached_worldCoord.x, this.m_cached_worldCoord.y);
+                    vertices.push(
+                        this.m_cached_worldCoord.x,
+                        this.m_cached_worldCoord.y,
+                        this.m_cached_worldCoord.z
+                    );
                 }
             }
             buffer.polygons.push({ vertices, holes, geojsonProperties });
@@ -596,7 +608,11 @@ export class GeoJsonParser {
                     .projectPoint(this.m_cached_geoCoord, this.m_cached_worldCoord)
                     .sub(center);
 
-                vertices.push(this.m_cached_worldCoord.x, this.m_cached_worldCoord.y);
+                vertices.push(
+                    this.m_cached_worldCoord.x,
+                    this.m_cached_worldCoord.y,
+                    this.m_cached_worldCoord.z
+                );
             }
         }
         buffer.lines.vertices.push(vertices);
