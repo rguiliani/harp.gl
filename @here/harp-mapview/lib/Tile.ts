@@ -1268,7 +1268,9 @@ export class Tile implements CachedResource {
                                 "displacementMap",
                                 "mapProperties",
                                 "normalMapProperties",
-                                "displacementMapProperties"
+                                "displacementMapProperties",
+                                "roughnessMap",
+                                "roughnessMapProperties"
                             ]
                         },
                         onMaterialUpdated

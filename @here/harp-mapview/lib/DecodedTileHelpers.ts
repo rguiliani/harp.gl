@@ -102,80 +102,88 @@ export function createMaterial(
     material.depthTest = isExtrudedPolygonTechnique(technique) && technique.depthTest !== false;
 
     if (isStandardTexturedTechnique(technique)) {
-        ["map", "normalMap", "displacementMap"].forEach((texturePropertyName: string) => {
-            const textureProperty = (technique as any)[texturePropertyName];
-            if (textureProperty === undefined) {
-                return;
-            }
-
-            const onLoad = (texture: THREE.Texture) => {
-                const properties = (technique as any)[
-                    texturePropertyName + "Properties"
-                ] as TextureProperties;
-                if (properties !== undefined) {
-                    if (properties.wrapS !== undefined) {
-                        texture.wrapS = toWrappingMode(properties.wrapS);
-                    }
-                    if (properties.wrapT !== undefined) {
-                        texture.wrapT = toWrappingMode(properties.wrapT);
-                    }
-                    if (properties.flipY !== undefined) {
-                        texture.flipY = properties.flipY;
-                    }
+        ["map", "normalMap", "displacementMap", "roughnessMap"].forEach(
+            (texturePropertyName: string) => {
+                const textureProperty = (technique as any)[texturePropertyName];
+                if (textureProperty === undefined) {
+                    return;
                 }
-                (material as any)[texturePropertyName] = texture;
-                texture.needsUpdate = true;
-                material.needsUpdate = true;
-                if (textureReadyCallback) {
-                    textureReadyCallback(texture);
-                }
-            };
 
-            const onError = (error: ErrorEvent | string) => {
-                logger.error("#createMaterial: Failed to load texture: ", error);
-            };
-
-            let textureUrl: string | undefined;
-            if (typeof textureProperty === "string") {
-                textureUrl = textureProperty;
-            } else if (isTextureBuffer(textureProperty)) {
-                if (textureProperty.type === "image/raw") {
-                    const properties = textureProperty.dataTextureProperties;
+                const onLoad = (texture: THREE.Texture) => {
+                    const properties = (technique as any)[
+                        texturePropertyName + "Properties"
+                    ] as TextureProperties;
                     if (properties !== undefined) {
-                        const texture = new THREE.DataTexture(
-                            textureProperty.buffer,
-                            properties.width,
-                            properties.height,
-                            properties.format ? toPixelFormat(properties.format) : undefined,
-                            properties.type ? toTextureDataType(properties.type) : undefined
-                        );
-                        // Technique does not support to specify filtering yet, but three.js Texture
-                        // is created with linear filtering by default whereas three.js DataTexture
-                        // is created with nearest by default. To be consistent also set the
-                        // filtering to linear here.
-                        texture.magFilter = THREE.LinearFilter;
-                        texture.minFilter = THREE.LinearFilter;
-                        onLoad(texture);
-                    } else {
-                        onError("no data texture properties provided.");
+                        if (properties.wrapS !== undefined) {
+                            texture.wrapS = toWrappingMode(properties.wrapS);
+                        }
+                        if (properties.wrapT !== undefined) {
+                            texture.wrapT = toWrappingMode(properties.wrapT);
+                        }
+                        if (properties.flipY !== undefined) {
+                            texture.flipY = properties.flipY;
+                        }
+                        if (properties.repeatU !== undefined) {
+                            texture.repeat.x = properties.repeatU;
+                        }
+                        if (properties.repeatV !== undefined) {
+                            texture.repeat.y = properties.repeatV;
+                        }
                     }
-                } else {
-                    const textureBlob = new Blob([textureProperty.buffer], {
-                        type: textureProperty.type
-                    });
-                    textureUrl = URL.createObjectURL(textureBlob);
+                    (material as any)[texturePropertyName] = texture;
+                    texture.needsUpdate = true;
+                    material.needsUpdate = true;
+                    if (textureReadyCallback) {
+                        textureReadyCallback(texture);
+                    }
+                };
+
+                const onError = (error: ErrorEvent | string) => {
+                    logger.error("#createMaterial: Failed to load texture: ", error);
+                };
+
+                let textureUrl: string | undefined;
+                if (typeof textureProperty === "string") {
+                    textureUrl = textureProperty;
+                } else if (isTextureBuffer(textureProperty)) {
+                    if (textureProperty.type === "image/raw") {
+                        const properties = textureProperty.dataTextureProperties;
+                        if (properties !== undefined) {
+                            const texture = new THREE.DataTexture(
+                                textureProperty.buffer,
+                                properties.width,
+                                properties.height,
+                                properties.format ? toPixelFormat(properties.format) : undefined,
+                                properties.type ? toTextureDataType(properties.type) : undefined
+                            );
+                            // Technique does not support to specify filtering yet, but three.js
+                            // Texture is created with linear filtering by default whereas three.js
+                            // DataTexture is created with nearest by default. To be consistent
+                            // also set the filtering to linear here.
+                            texture.magFilter = THREE.LinearFilter;
+                            texture.minFilter = THREE.LinearFilter;
+                            onLoad(texture);
+                        } else {
+                            onError("no data texture properties provided.");
+                        }
+                    } else {
+                        const textureBlob = new Blob([textureProperty.buffer], {
+                            type: textureProperty.type
+                        });
+                        textureUrl = URL.createObjectURL(textureBlob);
+                    }
+                }
+
+                if (textureUrl) {
+                    new THREE.TextureLoader().load(
+                        textureUrl,
+                        onLoad,
+                        undefined, // onProgress
+                        onError
+                    );
                 }
             }
-
-            if (textureUrl) {
-                new THREE.TextureLoader().load(
-                    textureUrl,
-                    onLoad,
-                    undefined, // onProgress
-                    onError
-                );
-            }
-        });
+        );
     }
 
     if (isShaderTechnique(technique)) {

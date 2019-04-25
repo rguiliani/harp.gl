@@ -973,6 +973,9 @@ export interface StandardTexturedTechnique extends BaseStandardTechnique {
      */
     displacementMap?: string | TextureBuffer;
     displacementMapProperties?: TextureProperties;
+
+    roughnessMap?: string | TextureBuffer;
+    roughnessMapProperties?: TextureProperties;
 }
 
 /**
@@ -1260,6 +1263,9 @@ export interface TextureProperties {
      * Flip texture vertically.
      */
     flipY?: boolean;
+
+    repeatU?: number;
+    repeatV?: number;
 }
 
 const interpolants = [THREE.DiscreteInterpolant, THREE.LinearInterpolant, THREE.CubicInterpolant];

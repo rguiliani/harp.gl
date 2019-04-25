@@ -907,7 +907,10 @@ export type AttributeValue =
     | boolean
     | InterpolatedPropertyDefinition<boolean>
     | string
-    | InterpolatedPropertyDefinition<string>;
+    | InterpolatedPropertyDefinition<string>
+    | {
+          [name: string]: AttributeValue;
+      };
 
 function isInterpolatedPropertyDefinition<T>(p: any): p is InterpolatedPropertyDefinition<T> {
     if (
